@@ -8,4 +8,7 @@ This [document](Overview_of_NLP.pdf) is an overview of natural language processi
 This [document](homework1/Text_Processing.pdf) provides a brief overview of homework 1 about Text Processing covered in this class.
 
 ## WordNet
-This [document](homework3/WordNet.ipynb) provides the notebook for research conducted over WordNet in homework 3 for this class.
+This [document](homework3/WordNet.ipynb) provides the notebook for research conducted over WordNet for this class.
+
+## Sentence Parsing
+This [document](homework5/axc190063_sentence_parsing.pdf) provides the models created for sentence parsing through PSG, dependency, and SRL parse tress for this class.
