@@ -1,82 +1,62 @@
 import pickle
-import sys
 
-# Load pickled dictionaries
+# Load the pickled dictionaries
 with open('en_unigrams.pickle', 'rb') as f:
-    english_unigram = pickle.load(f)
-with open('fr_unigrams.pickle', 'rb') as f:
-    french_unigram = pickle.load(f)
-with open('it_unigrams.pickle', 'rb') as f:
-    italian_unigram = pickle.load(f)
+    english_unigrams = pickle.load(f)
 with open('en_bigrams.pickle', 'rb') as f:
-    english_bigram = pickle.load(f)
+    english_bigrams = pickle.load(f)
+
+with open('fr_unigrams.pickle', 'rb') as f:
+    french_unigrams = pickle.load(f)
 with open('fr_bigrams.pickle', 'rb') as f:
-    french_bigram = pickle.load(f)
+    french_bigrams = pickle.load(f)
+
+with open('it_unigrams.pickle', 'rb') as f:
+    italian_unigrams = pickle.load(f)
 with open('it_bigrams.pickle', 'rb') as f:
-    italian_bigram = pickle.load(f)
+    italian_bigrams = pickle.load(f)
 
-# Open the test file and the output file
-test_file = open(sys.argv[1], 'r')
-output_file = open(sys.argv[2], 'w')
+# Load the test file and correct classifications
+with open('data/LangId.test', 'r') as f:
+    test_lines = f.readlines()
 
-# Create a list of the languages
-languages = ['English', 'French', 'Italian']
+with open('data/wordLangId.out', 'r') as f:
+    output_lines = f.readlines()
 
-# Set up a count of correct classifications and a list of incorrectly classified items
-correct_count = 0
-incorrect_items = []
 
-# Loop through each line in the test file
-for i, line in enumerate(test_file):
-    # Remove the newline character
-    line = line.strip()
-    # Tokenize the line
-    tokens = line.split()
-    # Initialize the probabilities for each language
-    english_prob = 0
-    french_prob = 0
-    italian_prob = 0
-    # Loop through each bigram in the line
-    for j in range(len(tokens)-1):
-        # Get the bigram
-        bigram = tokens[j] + ' ' + tokens[j+1]
-        # Calculate the probabilities for each language
-        if bigram in english_bigram:
-            english_prob += english_bigram[bigram]
-        else:
-            english_prob += english_unigram[tokens[j]]
-        if bigram in french_bigram:
-            french_prob += french_bigram[bigram]
-        else:
-            french_prob += french_unigram[tokens[j]]
-        if bigram in italian_bigram:
-            italian_prob += italian_bigram[bigram]
-        else:
-            italian_prob += italian_unigram[tokens[j]]
-    # Choose the language with the highest probability
-    max_prob = max(english_prob, french_prob, italian_prob)
-    if max_prob == english_prob:
-        lang = 'English'
-    elif max_prob == french_prob:
-        lang = 'French'
+# Define a function to calculate probability for a line in the test file
+def calculate_probability(line, unigram_dict, bigram_dict):
+    tokens = line.strip().split()
+    unigram_prob = 1
+    bigram_prob = 1
+    for token in tokens:
+        unigram_count = unigram_dict.get((token,), 0)
+        unigram_prob *= unigram_count / sum(unigram_dict.values())
+        if tokens.index(token) > 0:
+            bigram_count = bigram_dict.get((tokens[tokens.index(token) - 1], token), 0)
+            bigram_prob *= bigram_count / unigram_count
+    return unigram_prob * bigram_prob
+
+
+# Classify each line in the test file and write the predicted language to a file
+with open('LangId.out', 'w') as f:
+    for line in test_lines:
+        english_prob = calculate_probability(line, english_unigrams, english_bigrams)
+        french_prob = calculate_probability(line, french_unigrams, french_bigrams)
+        italian_prob = calculate_probability(line, italian_unigrams, italian_bigrams)
+        probs = {'ENGLISH': english_prob, 'FRENCH': french_prob, 'ITALIAN': italian_prob}
+        predicted_lang = max(probs, key=probs.get)
+        f.write(predicted_lang + '\n')
+
+# Calculate accuracy and output incorrectly classified lines
+num_correct = 0
+incorrect_lines = []
+for i in range(len(output_lines)):
+    if output_lines[i].strip() == open('LangId.out', 'r').readlines()[i].strip():
+        num_correct += 1
     else:
-        lang = 'Italian'
-    # Write the language to the output file
-    output_file.write(lang + '\n')
-    # Check if the classification is correct and update the count
-    if lang == languages[int(sys.argv[3].split('.')[0])-1]:
-        correct_count += 1
-    else:
-        incorrect_items.append(i+1)
+        incorrect_lines.append(i + 1)
+accuracy = num_correct / len(output_lines)
 
-# Close the files
-test_file.close()
-output_file.close()
-
-# Calculate and print the accuracy and the list of incorrect items
-accuracy = correct_count / (i+1) * 100
-print(f"Accuracy: {accuracy:.2f}%")
-if len(incorrect_items) > 0:
-    print("Incorrect items:", incorrect_items)
-else:
-    print("All items classified correctly.")
+print(f'Accuracy: {accuracy:.2%}')
+print(f'Incorrectly classified lines: {incorrect_lines}')

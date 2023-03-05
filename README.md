@@ -12,3 +12,6 @@ This [document](homework3/WordNet.ipynb) provides the notebook for research cond
 
 ## Sentence Parsing
 This [document](homework5/axc190063_sentence_parsing.pdf) provides the models created for sentence parsing through PSG, dependency, and SRL parse tress for this class.
+
+## N-grams
+This [document](homework4/ngrams_narrative.pdf) provides an overview of n-grams and the formulas for probability, learned in this section, along with [program1](homework4/program1_axc190063.py) and [program2](homework4/program2_axc190063.py).
