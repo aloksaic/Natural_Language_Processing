@@ -27,3 +27,6 @@ This [document](Reading_ACL_Papers.docx) provides a summary of an ACL research p
 
 ## Chatbot
 This [document](Homework9/Bot.py) provides the code to the chatbot that my partner and I worked on for this assignment, that answers questions related to quantum physics. 
+
+## Summary
+Through this class, I was able to pick up a few skills in NLP and a little bit of ML as well. I was able to learn about different models, along with topics such as Naive Bayes, Logistic Regression, Neural Networks, and more. As most of the assignments were done in Python, I picked up a grasp on a few new libraries, such as nltk, and new methods. The chatbot assignment, in particular, taught me a lot more about AI, which I am interested in pursuing in the future as well.
